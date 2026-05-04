@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+service FlightService {
+  rpc CheckAvailability (FlightRequest) returns (AvailabilityResponse);
+}
+
+service BookingService {
+  rpc BookSeat (BookingRequest) returns (BookingResponse);
+  rpc CancelSeat (CancelRequest) returns (CancelResponse);
+}
+
+message FlightRequest {
+  string flight_id = 1;
+}
+
+message AvailabilityResponse {
+  repeated string available_seats = 1;
+}
+
+message BookingRequest {
+  string user_id = 1;
+  string flight_id = 2;
+  string seat_no = 3;
+}
+
+message BookingResponse {
+  string status = 1;
+}
+
+message CancelRequest {
+  string booking_id = 1;
+}
+
+message CancelResponse {
+  string status = 1;
+}

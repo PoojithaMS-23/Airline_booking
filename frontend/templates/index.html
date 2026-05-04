@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Airline Reservation System</title>
+</head>
+<body>
+
+<h1>✈️ Airline Reservation System</h1>
+
+<h2>Check Availability</h2>
+<form method="post">
+    <button name="action" value="check">Check Seats</button>
+</form>
+
+{% if seats %}
+<p><b>Available Seats:</b> {{ seats }}</p>
+{% endif %}
+
+<hr>
+
+<h2>Book Seat</h2>
+<form method="post">
+    Seat: <input type="text" name="seat" placeholder="A1">
+    <button name="action" value="book">Book</button>
+</form>
+
+<hr>
+
+<h2>Cancel Booking</h2>
+<form method="post">
+    Booking ID: <input type="text" name="booking_id">
+    <button name="action" value="cancel">Cancel</button>
+</form>
+
+<hr>
+
+{% if message %}
+<p><b>Response:</b> {{ message }}</p>
+{% endif %}
+
+</body>
+</html>
