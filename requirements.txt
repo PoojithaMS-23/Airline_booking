@@ -1,2 +1,5 @@
-grpcio grpcio-tools
+grpcio
+grpcio-tools
 flask
+flask-cors
+mysql-connector-python

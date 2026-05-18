@@ -1,5 +1,12 @@
 from flask import Flask, render_template, request
+import os
+import sys
 import grpc
+
+# Ensure the project root is on sys.path so sibling modules like generated can be imported
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
 
 import generated.booking_pb2 as pb2
 import generated.booking_pb2_grpc as pb2_grpc
