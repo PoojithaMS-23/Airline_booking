@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+
+  margin: 0;
+
+  font-family: 'Segoe UI', sans-serif;
+
+  background:
+    linear-gradient(
+      to bottom right,
+      #dbeafe,
+      #ffffff,
+      #ede9fe
+    );
+
+  min-height: 100vh;
+}
+
+* {
+
+  box-sizing: border-box;
+}
