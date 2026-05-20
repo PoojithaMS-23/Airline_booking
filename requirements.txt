@@ -1,2 +1,3 @@
-grpcio grpcio-tools
-flask
+grpcio>=1.60.0
+grpcio-tools>=1.60.0
+flask>=3.0.0

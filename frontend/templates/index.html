@@ -1,41 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Airline Reservation System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Reservation</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 1rem; background: #f4f6f8; }
+        h1 { color: #1a365d; }
+        section { background: #fff; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        label { display: block; margin-top: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        input, select { width: 100%; padding: 0.5rem; margin-top: 0.25rem; }
+        button { margin-top: 0.75rem; padding: 0.5rem 1rem; background: #2b6cb0; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+        button:hover { background: #2c5282; }
+        .seat-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+        .seat { padding: 0.5rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; }
+        .seat.available { background: #c6f6d5; color: #22543d; }
+        .seat.hold { background: #feebc8; color: #7b341e; animation: pulse 1.2s ease-in-out infinite; }
+        .seat.booked { background: #fed7d7; color: #742a2a; }
+        @keyframes pulse { 50% { opacity: 0.7; } }
+        .msg { padding: 0.75rem; background: #ebf8ff; border-left: 4px solid #3182ce; border-radius: 4px; }
+    </style>
 </head>
 <body>
 
-<h1>✈️ Airline Reservation System</h1>
+<h1>Airline Reservation System</h1>
 
-<h2>Check Availability</h2>
-<form method="post">
-    <button name="action" value="check">Check Seats</button>
-</form>
+<section>
+    <h2>Session</h2>
+    <form method="post" id="session-form">
+        <label>Flight ID</label>
+        <select name="flight_id" id="flight_id">
+            <option value="F1" {% if flight_id == 'F1' %}selected{% endif %}>F1 (A1–B2)</option>
+            <option value="F2" {% if flight_id == 'F2' %}selected{% endif %}>F2 (C1–C3)</option>
+        </select>
+        <label>User ID</label>
+        <input type="text" name="user_id" id="user_id" value="{{ user_id }}">
+        <button type="submit" name="action" value="check">Check availability</button>
+    </form>
+</section>
 
 {% if seats %}
-<p><b>Available Seats:</b> {{ seats }}</p>
+<section id="seats-panel">
+    <h2>Seats — {{ flight_id }}</h2>
+    <div class="seat-grid" id="seat-grid">
+        {% for seat_no, status in seats %}
+        <span class="seat {{ status|lower }}">{{ seat_no }}: {{ status }}</span>
+        {% endfor %}
+    </div>
+</section>
 {% endif %}
 
-<hr>
+<section>
+    <h2>Book seat</h2>
+    <form method="post">
+        <input type="hidden" name="flight_id" value="{{ flight_id }}">
+        <input type="hidden" name="user_id" value="{{ user_id }}">
+        <label>Seat number</label>
+        <input type="text" name="seat" placeholder="A2" required>
+        <button type="submit" name="action" value="book">Book</button>
+        <p style="font-size:0.85rem;color:#718096;margin-top:0.5rem;">Booking takes about 5 seconds — please wait after clicking.</p>
+    </form>
+</section>
 
-<h2>Book Seat</h2>
-<form method="post">
-    Seat: <input type="text" name="seat" placeholder="A1">
-    <button name="action" value="book">Book</button>
-</form>
-
-<hr>
-
-<h2>Cancel Booking</h2>
-<form method="post">
-    Booking ID: <input type="text" name="booking_id">
-    <button name="action" value="cancel">Cancel</button>
-</form>
-
-<hr>
+<section>
+    <h2>Cancel reservation</h2>
+    <form method="post">
+        <input type="hidden" name="flight_id" value="{{ flight_id }}">
+        <label>Seat number</label>
+        <input type="text" name="seat" placeholder="A2" required>
+        <button type="submit" name="action" value="cancel">Cancel</button>
+    </form>
+</section>
 
 {% if message %}
-<p><b>Response:</b> {{ message }}</p>
+<p class="msg"><strong>Result:</strong> {{ message }}</p>
+{% endif %}
+
+{% if auto_refresh %}
+<script>
+(function () {
+  const flightId = document.getElementById('flight_id')?.value || '{{ flight_id }}';
+  const grid = document.getElementById('seat-grid');
+  if (!grid) return;
+
+  async function refresh() {
+    try {
+      const res = await fetch('/api/flights/' + flightId + '/seats');
+      const data = await res.json();
+      grid.innerHTML = data.seats.map(function (s) {
+        const cls = s.status.toLowerCase();
+        return '<span class="seat ' + cls + '">' + s.seat_no + ': ' + s.status + '</span>';
+      }).join('');
+    } catch (e) { /* ignore */ }
+  }
+
+  setInterval(refresh, 2000);
+})();
+</script>
 {% endif %}
 
 </body>

@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from . import booking_pb2 as booking__pb2
+from generated import booking_pb2 as booking__pb2
 
 GRPC_GENERATED_VERSION = '1.80.0'
 GRPC_VERSION = grpc.__version__
@@ -25,8 +25,11 @@ if _version_not_supported:
     )
 
 
-class FlightServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
+class ReservationServiceStub(object):
+    """Distributed airline reservation — gRPC service contract.
+    Protobuf handles data marshalling (binary serialization) over the network.
+
+    """
 
     def __init__(self, channel):
         """Constructor.
@@ -35,14 +38,27 @@ class FlightServiceStub(object):
             channel: A grpc.Channel.
         """
         self.CheckAvailability = channel.unary_unary(
-                '/FlightService/CheckAvailability',
-                request_serializer=booking__pb2.FlightRequest.SerializeToString,
+                '/ReservationService/CheckAvailability',
+                request_serializer=booking__pb2.AvailabilityRequest.SerializeToString,
                 response_deserializer=booking__pb2.AvailabilityResponse.FromString,
+                _registered_method=True)
+        self.BookSeat = channel.unary_unary(
+                '/ReservationService/BookSeat',
+                request_serializer=booking__pb2.BookingRequest.SerializeToString,
+                response_deserializer=booking__pb2.BookingResponse.FromString,
+                _registered_method=True)
+        self.CancelReservation = channel.unary_unary(
+                '/ReservationService/CancelReservation',
+                request_serializer=booking__pb2.CancelRequest.SerializeToString,
+                response_deserializer=booking__pb2.CancelResponse.FromString,
                 _registered_method=True)
 
 
-class FlightServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
+class ReservationServiceServicer(object):
+    """Distributed airline reservation — gRPC service contract.
+    Protobuf handles data marshalling (binary serialization) over the network.
+
+    """
 
     def CheckAvailability(self, request, context):
         """Missing associated documentation comment in .proto file."""
@@ -50,24 +66,49 @@ class FlightServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def BookSeat(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
 
-def add_FlightServiceServicer_to_server(servicer, server):
+    def CancelReservation(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_ReservationServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'CheckAvailability': grpc.unary_unary_rpc_method_handler(
                     servicer.CheckAvailability,
-                    request_deserializer=booking__pb2.FlightRequest.FromString,
+                    request_deserializer=booking__pb2.AvailabilityRequest.FromString,
                     response_serializer=booking__pb2.AvailabilityResponse.SerializeToString,
+            ),
+            'BookSeat': grpc.unary_unary_rpc_method_handler(
+                    servicer.BookSeat,
+                    request_deserializer=booking__pb2.BookingRequest.FromString,
+                    response_serializer=booking__pb2.BookingResponse.SerializeToString,
+            ),
+            'CancelReservation': grpc.unary_unary_rpc_method_handler(
+                    servicer.CancelReservation,
+                    request_deserializer=booking__pb2.CancelRequest.FromString,
+                    response_serializer=booking__pb2.CancelResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'FlightService', rpc_method_handlers)
+            'ReservationService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('FlightService', rpc_method_handlers)
+    server.add_registered_method_handlers('ReservationService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
-class FlightService(object):
-    """Missing associated documentation comment in .proto file."""
+class ReservationService(object):
+    """Distributed airline reservation — gRPC service contract.
+    Protobuf handles data marshalling (binary serialization) over the network.
+
+    """
 
     @staticmethod
     def CheckAvailability(request,
@@ -83,8 +124,8 @@ class FlightService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/FlightService/CheckAvailability',
-            booking__pb2.FlightRequest.SerializeToString,
+            '/ReservationService/CheckAvailability',
+            booking__pb2.AvailabilityRequest.SerializeToString,
             booking__pb2.AvailabilityResponse.FromString,
             options,
             channel_credentials,
@@ -95,67 +136,6 @@ class FlightService(object):
             timeout,
             metadata,
             _registered_method=True)
-
-
-class BookingServiceStub(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def __init__(self, channel):
-        """Constructor.
-
-        Args:
-            channel: A grpc.Channel.
-        """
-        self.BookSeat = channel.unary_unary(
-                '/BookingService/BookSeat',
-                request_serializer=booking__pb2.BookingRequest.SerializeToString,
-                response_deserializer=booking__pb2.BookingResponse.FromString,
-                _registered_method=True)
-        self.CancelSeat = channel.unary_unary(
-                '/BookingService/CancelSeat',
-                request_serializer=booking__pb2.CancelRequest.SerializeToString,
-                response_deserializer=booking__pb2.CancelResponse.FromString,
-                _registered_method=True)
-
-
-class BookingServiceServicer(object):
-    """Missing associated documentation comment in .proto file."""
-
-    def BookSeat(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def CancelSeat(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-
-def add_BookingServiceServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-            'BookSeat': grpc.unary_unary_rpc_method_handler(
-                    servicer.BookSeat,
-                    request_deserializer=booking__pb2.BookingRequest.FromString,
-                    response_serializer=booking__pb2.BookingResponse.SerializeToString,
-            ),
-            'CancelSeat': grpc.unary_unary_rpc_method_handler(
-                    servicer.CancelSeat,
-                    request_deserializer=booking__pb2.CancelRequest.FromString,
-                    response_serializer=booking__pb2.CancelResponse.SerializeToString,
-            ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-            'BookingService', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('BookingService', rpc_method_handlers)
-
-
- # This class is part of an EXPERIMENTAL API.
-class BookingService(object):
-    """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def BookSeat(request,
@@ -171,7 +151,7 @@ class BookingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/BookingService/BookSeat',
+            '/ReservationService/BookSeat',
             booking__pb2.BookingRequest.SerializeToString,
             booking__pb2.BookingResponse.FromString,
             options,
@@ -185,7 +165,7 @@ class BookingService(object):
             _registered_method=True)
 
     @staticmethod
-    def CancelSeat(request,
+    def CancelReservation(request,
             target,
             options=(),
             channel_credentials=None,
@@ -198,7 +178,7 @@ class BookingService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/BookingService/CancelSeat',
+            '/ReservationService/CancelReservation',
             booking__pb2.CancelRequest.SerializeToString,
             booking__pb2.CancelResponse.FromString,
             options,

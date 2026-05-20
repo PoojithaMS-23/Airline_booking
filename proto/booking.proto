@@ -1,20 +1,25 @@
 syntax = "proto3";
 
-service FlightService {
-  rpc CheckAvailability (FlightRequest) returns (AvailabilityResponse);
-}
+// Distributed airline reservation — gRPC service contract.
+// Protobuf handles data marshalling (binary serialization) over the network.
 
-service BookingService {
+service ReservationService {
+  rpc CheckAvailability (AvailabilityRequest) returns (AvailabilityResponse);
   rpc BookSeat (BookingRequest) returns (BookingResponse);
-  rpc CancelSeat (CancelRequest) returns (CancelResponse);
+  rpc CancelReservation (CancelRequest) returns (CancelResponse);
 }
 
-message FlightRequest {
+message AvailabilityRequest {
   string flight_id = 1;
 }
 
+message SeatInfo {
+  string seat_no = 1;
+  string status = 2;  // AVAILABLE | HOLD | BOOKED
+}
+
 message AvailabilityResponse {
-  repeated string available_seats = 1;
+  repeated SeatInfo seats = 1;
 }
 
 message BookingRequest {
@@ -24,13 +29,19 @@ message BookingRequest {
 }
 
 message BookingResponse {
-  string status = 1;
+  bool success = 1;
+  string message = 2;
+  string booking_id = 3;
+  string hold_id = 4;
+  int32 hold_seconds = 5;
 }
 
 message CancelRequest {
-  string booking_id = 1;
+  string flight_id = 1;
+  string seat_no = 2;
 }
 
 message CancelResponse {
-  string status = 1;
+  bool success = 1;
+  string message = 2;
 }

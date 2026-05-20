@@ -1,94 +1,103 @@
-# booking_service/server.py
+# booking_service/server.py — gRPC reservation backend (remote procedure calls)
+
+import sys
+from concurrent import futures
+from pathlib import Path
 
 import grpc
-from concurrent import futures
-import threading
-import random
-import uuid
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 import generated.booking_pb2 as pb2
 import generated.booking_pb2_grpc as pb2_grpc
+from booking_service.seat_store import DB_PATH, SeatStore
+from config import AUTO_CONFIRM_SECONDS, HOLD_DURATION_SECONDS, RPC_BIND, RPC_PORT
 
-# Seat state storage
-seats = {
-    "A1": "AVAILABLE",
-    "A2": "AVAILABLE",
-    "A3": "AVAILABLE"
-}
-
-# booking_id → seat mapping
-bookings = {}
-
-# Lock for concurrency control
-lock = threading.Lock()
+store = SeatStore()
 
 
-class BookingService(pb2_grpc.BookingServiceServicer):
+class ReservationService(pb2_grpc.ReservationServiceServicer):
+
+    def CheckAvailability(self, request, context):
+        seats = store.check_availability(request.flight_id.strip())
+        return pb2.AvailabilityResponse(
+            seats=[
+                pb2.SeatInfo(seat_no=seat_no, status=status)
+                for seat_no, status in seats
+            ]
+        )
 
     def BookSeat(self, request, context):
-        with lock:
-            seat_no = request.seat_no
-
-            # Check availability
-            if seats.get(seat_no) != "AVAILABLE":
-                return pb2.BookingResponse(
-                    status="FAILED"
-                )
-
-            # Step 1: Temporarily reserve seat
-            seats[seat_no] = "BOOKED"
-
-            # Step 2: Simulate payment outcome
-            if random.choice([True, False]):
-                # ❌ Payment failed → rollback
-                seats[seat_no] = "AVAILABLE"
-                return pb2.BookingResponse(
-                    status="PAYMENT FAILED"
-                )
-
-            # Step 3: Confirm booking
-            booking_id = str(uuid.uuid4())
-            bookings[booking_id] = seat_no
-
+        ok, code, booking_id = store.book_seat_complete(
+            request.user_id.strip(),
+            request.flight_id.strip(),
+            request.seat_no.strip().upper(),
+        )
+        if ok and booking_id:
             return pb2.BookingResponse(
-                status=f"SUCCESS | Booking ID: {booking_id}"
+                success=True,
+                message="CONFIRMED",
+                booking_id=booking_id,
+                hold_id="",
+                hold_seconds=0,
             )
+        return pb2.BookingResponse(
+            success=False,
+            message=code,
+            booking_id="",
+            hold_id="",
+            hold_seconds=0,
+        )
 
-    def CancelSeat(self, request, context):
-        with lock:
-            booking_id = request.booking_id
+    def CancelReservation(self, request, context):
+        ok, code = store.cancel_reservation(
+            request.flight_id.strip(),
+            request.seat_no.strip().upper(),
+        )
+        return pb2.CancelResponse(
+            success=ok,
+            message=code,
+        )
 
-            # Check if booking exists
-            if booking_id not in bookings:
-                return pb2.CancelResponse(
-                    status="INVALID BOOKING ID"
-                )
 
-            seat_no = bookings[booking_id]
-
-            # Release seat
-            seats[seat_no] = "AVAILABLE"
-
-            # Remove booking
-            del bookings[booking_id]
-
-            return pb2.CancelResponse(
-                status="CANCELLED SUCCESSFULLY"
-            )
+def _bind_port(server, port: int) -> str:
+    candidates = [
+        f"{RPC_BIND}:{port}",
+        f"127.0.0.1:{port}",
+        f"localhost:{port}",
+    ]
+    seen = set()
+    for addr in candidates:
+        if addr in seen:
+            continue
+        seen.add(addr)
+        if server.add_insecure_port(addr) != 0:
+            return addr
+    return ""
 
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-
-    pb2_grpc.add_BookingServiceServicer_to_server(
-        BookingService(), server
+    pb2_grpc.add_ReservationServiceServicer_to_server(
+        ReservationService(), server
     )
-
-    server.add_insecure_port('[::]:50052')
+    bound = _bind_port(server, RPC_PORT)
+    if not bound:
+        raise RuntimeError(
+            f"Could not bind gRPC server on port {RPC_PORT}. "
+            "Stop the other process first:\n"
+            f'  netstat -ano | findstr ":{RPC_PORT}"\n'
+            f"  taskkill /PID <pid> /F"
+        )
     server.start()
-
-    print("🚀 Booking Service running on port 50052...")
-
+    print(f"Reservation gRPC server on {bound}")
+    print(f"Shared database: {DB_PATH}")
+    print(
+        f"Booking: hold then confirm after {AUTO_CONFIRM_SECONDS}s "
+        f"(max hold {HOLD_DURATION_SECONDS}s)"
+    )
     server.wait_for_termination()
 
 

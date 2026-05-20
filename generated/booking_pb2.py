@@ -24,27 +24,27 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\"\"\n\rFlightRequest\x12\x11\n\tflight_id\x18\x01 \x01(\t\"/\n\x14\x41vailabilityResponse\x12\x17\n\x0f\x61vailable_seats\x18\x01 \x03(\t\"E\n\x0e\x42ookingRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\tflight_id\x18\x02 \x01(\t\x12\x0f\n\x07seat_no\x18\x03 \x01(\t\"!\n\x0f\x42ookingResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"#\n\rCancelRequest\x12\x12\n\nbooking_id\x18\x01 \x01(\t\" \n\x0e\x43\x61ncelResponse\x12\x0e\n\x06status\x18\x01 \x01(\t2K\n\rFlightService\x12:\n\x11\x43heckAvailability\x12\x0e.FlightRequest\x1a\x15.AvailabilityResponse2n\n\x0e\x42ookingService\x12-\n\x08\x42ookSeat\x12\x0f.BookingRequest\x1a\x10.BookingResponse\x12-\n\nCancelSeat\x12\x0e.CancelRequest\x1a\x0f.CancelResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rbooking.proto\"(\n\x13\x41vailabilityRequest\x12\x11\n\tflight_id\x18\x01 \x01(\t\"+\n\x08SeatInfo\x12\x0f\n\x07seat_no\x18\x01 \x01(\t\x12\x0e\n\x06status\x18\x02 \x01(\t\"0\n\x14\x41vailabilityResponse\x12\x18\n\x05seats\x18\x01 \x03(\x0b\x32\t.SeatInfo\"E\n\x0e\x42ookingRequest\x12\x0f\n\x07user_id\x18\x01 \x01(\t\x12\x11\n\tflight_id\x18\x02 \x01(\t\x12\x0f\n\x07seat_no\x18\x03 \x01(\t\"n\n\x0f\x42ookingResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x12\n\nbooking_id\x18\x03 \x01(\t\x12\x0f\n\x07hold_id\x18\x04 \x01(\t\x12\x14\n\x0chold_seconds\x18\x05 \x01(\x05\"3\n\rCancelRequest\x12\x11\n\tflight_id\x18\x01 \x01(\t\x12\x0f\n\x07seat_no\x18\x02 \x01(\t\"2\n\x0e\x43\x61ncelResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\xbb\x01\n\x12ReservationService\x12@\n\x11\x43heckAvailability\x12\x14.AvailabilityRequest\x1a\x15.AvailabilityResponse\x12-\n\x08\x42ookSeat\x12\x0f.BookingRequest\x1a\x10.BookingResponse\x12\x34\n\x11\x43\x61ncelReservation\x12\x0e.CancelRequest\x1a\x0f.CancelResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'booking_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_FLIGHTREQUEST']._serialized_start=17
-  _globals['_FLIGHTREQUEST']._serialized_end=51
-  _globals['_AVAILABILITYRESPONSE']._serialized_start=53
-  _globals['_AVAILABILITYRESPONSE']._serialized_end=100
-  _globals['_BOOKINGREQUEST']._serialized_start=102
-  _globals['_BOOKINGREQUEST']._serialized_end=171
-  _globals['_BOOKINGRESPONSE']._serialized_start=173
-  _globals['_BOOKINGRESPONSE']._serialized_end=206
-  _globals['_CANCELREQUEST']._serialized_start=208
-  _globals['_CANCELREQUEST']._serialized_end=243
-  _globals['_CANCELRESPONSE']._serialized_start=245
-  _globals['_CANCELRESPONSE']._serialized_end=277
-  _globals['_FLIGHTSERVICE']._serialized_start=279
-  _globals['_FLIGHTSERVICE']._serialized_end=354
-  _globals['_BOOKINGSERVICE']._serialized_start=356
-  _globals['_BOOKINGSERVICE']._serialized_end=466
+  _globals['_AVAILABILITYREQUEST']._serialized_start=17
+  _globals['_AVAILABILITYREQUEST']._serialized_end=57
+  _globals['_SEATINFO']._serialized_start=59
+  _globals['_SEATINFO']._serialized_end=102
+  _globals['_AVAILABILITYRESPONSE']._serialized_start=104
+  _globals['_AVAILABILITYRESPONSE']._serialized_end=152
+  _globals['_BOOKINGREQUEST']._serialized_start=154
+  _globals['_BOOKINGREQUEST']._serialized_end=223
+  _globals['_BOOKINGRESPONSE']._serialized_start=225
+  _globals['_BOOKINGRESPONSE']._serialized_end=335
+  _globals['_CANCELREQUEST']._serialized_start=337
+  _globals['_CANCELREQUEST']._serialized_end=388
+  _globals['_CANCELRESPONSE']._serialized_start=390
+  _globals['_CANCELRESPONSE']._serialized_end=440
+  _globals['_RESERVATIONSERVICE']._serialized_start=443
+  _globals['_RESERVATIONSERVICE']._serialized_end=630
 # @@protoc_insertion_point(module_scope)
